@@ -1,7 +1,11 @@
 import React from 'react';
 import Line from './Line';
 
-const Canvas = ({ nodes, edges, onDrop, handleNodeClick }) => {
+const Canvas = ({ nodes, edges, onDrop }) => {
+  const handleNodeClick = () => {
+    console.log('Node clicked');
+  };
+
   return (
     <div className="canvas" style={{ position: 'relative', width: 500, height: 500, border: '1px solid black' }}>
       {nodes.map((node) => (
