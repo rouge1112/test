@@ -154,9 +154,10 @@ const FlowchartApp = () => {
   };
 
   const handleDragStart = (label) => {
-    console.log('handleDragStart:', label);
-    setDraggedItem(label); // 新しいドラッグ中のアイテムを設定
-  };
+    console.log(`handleDragStart: ${label}`);
+    setPreviousItem(draggedItem);
+    setDraggedItem(label);
+};
 
   const handleDrop = async (label, offset) => {
     try {
@@ -192,6 +193,25 @@ const FlowchartApp = () => {
       console.error('Error adding node:', error);
     }
   };
+
+  const drawConnection = (startNode, endNode) => {
+    const startX = startNode.x + startNode.width / 2;
+    const startY = startNode.y + startNode.height / 2;
+    const endX = endNode.x + endNode.width / 2;
+    const endY = endNode.y + endNode.height / 2;
+
+    // 線の要素を作成
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', startX);
+    line.setAttribute('y1', startY);
+    line.setAttribute('x2', endX);
+    line.setAttribute('y2', endY);
+    line.setAttribute('stroke', 'black');
+    document.querySelector('svg').appendChild(line);
+};
+
+// ノードが接続されたときにdrawConnectionを呼び出す
+drawConnection(node1, node2);
 
   return (
     <DndProvider backend={HTML5Backend}>
