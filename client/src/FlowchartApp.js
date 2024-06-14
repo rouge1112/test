@@ -38,6 +38,23 @@ const Canvas = ({ nodes, edges, onDrop, handleNodeClick, currentEdge }) => {
     },
   }));
 
+    const calculateEdgeCoordinates = (edge, nodes) => {
+        const sourceNode = nodes.find(node => node.id === edge.source);
+        const targetNode = nodes.find(node => node.id === edge.target);
+
+        if (!sourceNode || !targetNode) {
+            console.error('Invalid edge:', edge);
+            return { x1: 0, y1: 0, x2: 0, y2: 0 };
+        }
+
+        return {
+            x1: sourceNode.x,
+            y1: sourceNode.y,
+            x2: targetNode.x,
+            y2: targetNode.y
+        };
+    };
+
   return (
     <div ref={drop} className="canvas" style={{ position: 'relative', width: 500, height: 500, border: '1px solid black' }}>
       {nodes.map((node) => (
