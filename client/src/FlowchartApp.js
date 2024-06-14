@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Canvas from './Canvas'; // ここを修正
+import axios from 'axios';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import axios from 'axios';
+
 
 const ItemTypes = {
   NODE: 'node',
@@ -203,13 +203,7 @@ const FlowchartApp = () => {
           Delete All Nodes
         </button>
       </div>
-      <div className="flowchart-app">
-      <Canvas
-        nodes={nodes}
-        edges={edges}
-        onDrop={handleDrop}
-      />
-    </div>
+      <Canvas nodes={nodes} edges={edges} onDrop={handleDrop} handleNodeClick={handleNodeClick} />
     </DndProvider>
   );
 };
