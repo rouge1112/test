@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import Sidebar from './Sidebar';
+import React, { useState, useEffect, useRef } from 'react';
 import DiagramCanvas from './Canvas'; 
-import { initialNodes, initialEdges } from './data';
-import { DndProvider } from 'react-dnd';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import axios from 'axios';
 
 const ItemTypes = {
   NODE: 'node',
@@ -205,7 +204,6 @@ const FlowchartApp = () => {
         </button>
       </div>
       <div className="flowchart-app">
-      <Sidebar onDragStart={handleDragStart} />
       <DiagramCanvas
         nodes={nodes}
         edges={edges}
