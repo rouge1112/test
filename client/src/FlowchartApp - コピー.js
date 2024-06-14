@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Sidebar from './Sidebar';
-import Canvas from './Canvas';
-import { initialNodes, initialEdges } from './data';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 
 const ItemTypes = {
@@ -203,14 +203,7 @@ const FlowchartApp = () => {
           Delete All Nodes
         </button>
       </div>
-      <div className="flowchart-app">
-      <Sidebar onDragStart={handleDragStart} />
-      <Canvas
-        nodes={nodes}
-        edges={edges}
-        onDrop={handleDrop}
-      />
-    </div>
+      <Canvas nodes={nodes} edges={edges} onDrop={handleDrop} handleNodeClick={handleNodeClick} />
     </DndProvider>
   );
 };
