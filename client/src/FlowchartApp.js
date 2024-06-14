@@ -7,42 +7,25 @@ const ItemTypes = {
   NODE: 'node',
 };
 
-// const MenuItem = ({ label }) => {
-//   const [{ isDragging }, drag] = useDrag(() => ({
-//     type: ItemTypes.NODE,
-//     item: { label },
-//     collect: (monitor) => ({
-//       isDragging: !!monitor.isDragging(),
-//     }),
-//   }))
-//   ;
-
-//   return (
-//     <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move', margin: '5px' }}>
-//       {label}
-//     </div>
-//   );
-// };
 const MenuItem = ({ label, onDragStart }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.NODE,
-    item: { label }, // ドラッグするアイテムの情報を提供
+    item: { label },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }), [label]);
 
   const handleDragStart = () => {
-    onDragStart(label); // ドラッグ開始時にコールバックを呼び出す
+    onDragStart(label);
   };
 
   return (
-    <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1 }} onDragStart={handleDragStart}>
+    <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move', margin: '5px' }} onDragStart={handleDragStart}>
       {label}
     </div>
   );
 };
-
 
 const Canvas = ({ nodes, edges, onDrop, handleNodeClick, currentEdge }) => {
   const [, drop] = useDrop(() => ({
@@ -67,7 +50,7 @@ const Canvas = ({ nodes, edges, onDrop, handleNodeClick, currentEdge }) => {
             cursor: 'pointer',
           }}
           onClick={(e) => {
-            e.stopPropagation(); // Prevent canvas click handler
+            e.stopPropagation();
             handleNodeClick(node.id);
           }}
         >
@@ -82,8 +65,8 @@ const Canvas = ({ nodes, edges, onDrop, handleNodeClick, currentEdge }) => {
             return (
               <line
                 key={index}
-                x1={sourceNode.x + 25} // Adjust for node width
-                y1={sourceNode.y + 10} // Adjust for node height
+                x1={sourceNode.x + 25}
+                y1={sourceNode.y + 10}
                 x2={targetNode.x + 25}
                 y2={targetNode.y + 10}
                 style={{ stroke: 'black', strokeWidth: 2 }}
@@ -111,15 +94,13 @@ const FlowchartApp = () => {
   const [edges, setEdges] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [currentEdge, setCurrentEdge] = useState(null);
-  const [draggedItem, setDraggedItem] = useState(null); // ドラッグ中のアイテム
-  const [previousItem, setPreviousItem] = useState(null); // ドラッグ前のアイテム
+  const [draggedItem, setDraggedItem] = useState(null);
 
   useEffect(() => {
     fetchMenuItems();
     fetchData();
   }, []);
 
-  // メニュー表示用の処理
   const fetchMenuItems = async () => {
     try {
       const response = await fetch('/menu_items.csv');
@@ -147,7 +128,7 @@ const FlowchartApp = () => {
       if (currentEdge) {
         const newEdge = { source: currentEdge.source, target: nodeId };
         await axios.post('http://localhost:3000/api/edges', newEdge);
-        setEdges([...edges, newEdge]); // 新しいエッジを追加
+        setEdges([...edges, newEdge]);
         setCurrentEdge(null);
         fetchData();
       } else {
@@ -168,72 +149,38 @@ const FlowchartApp = () => {
   };
 
   const handleDragStart = (label) => {
-    console.log('handleDragStart:', label); // ドラッグ開始時にログ出力
-    setDraggedItem(label); // ドラッグされたアイテムを記録
-    const newEdge = { source: label, target: label }; // 例として target も label としていますが、実際のロジックに合わせて修正してください
-    axios.post('http://localhost:3000/api/edges', newEdge)
-      .then(() => {
-        setEdges([...edges, newEdge]); // 新しいエッジを追加
-      })
-      .catch((error) => {
-        console.error('Error creating edge:', error);
-      });
+    console.log('handleDragStart:', label);
+    setDraggedItem(label);
   };
-  
 
   const handleDrop = async (label, offset) => {
-  try {
-    console.log('ラベル名は:',label); 
-    console.log('ドラッグ前のアイテム:', previousItem); // ドラッグ前のアイテムを出力
-    console.log('ドラッグ中のアイテム:', draggedItem); // ドラッグ中のアイテムを出力
+    try {
+      const canvasRect = document.querySelector('.canvas').getBoundingClientRect();
+      const x = offset.x - canvasRect.left;
+      const y = offset.y - canvasRect.top;
+      const newNode = { label, x, y };
 
-    // ドロップされたアイテムの情報を取得
-    const canvasRect = document.querySelector('.canvas').getBoundingClientRect();
-    const x = offset.x - canvasRect.left;
-    const y = offset.y - canvasRect.top;
-    const newNode = { label, x, y };
-    
-    // 新しいノードを追加
-    const response = await axios.post('http://localhost:3000/api/nodes', newNode);
-    setNodes([...nodes, response.data]);
+      const response = await axios.post('http://localhost:3000/api/nodes', newNode);
+      setNodes([...nodes, response.data]);
 
-      // エッジを作成 (draggedItemが存在する場合のみ)
-      if (draggedItem !== null) {
+      if (draggedItem) {
         const newEdge = { source: draggedItem, target: label };
         await axios.post('http://localhost:3000/api/edges', newEdge);
         setEdges([...edges, newEdge]);
       }
 
-    // ドラッグ関連の状態をリセット
-    setPreviousItem(null);
-    setDraggedItem(null);
-
-    fetchData();
+      setDraggedItem(null);
+      fetchData();
     } catch (error) {
       console.error('Error adding node:', error);
     }
   };
 
-  useEffect(() => {
-    // draggedItemの値が更新されたら実行される処理
-    // エッジを作成 (draggedItemが存在する場合のみ)
-    if (draggedItem !== null) {
-      const newEdge = { source: draggedItem, target: draggedItem }; // 修正: targetをdraggedItemに変更
-      axios.post('http://localhost:3000/api/edges', newEdge)
-        .then(() => {
-          setEdges([...edges, newEdge]);
-        })
-        .catch((error) => {
-          console.error('Error creating edge:', error);
-        });
-    }
-  }, [draggedItem, edges]);
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
         {menuItems.map((item) => (
-          <MenuItem key={item} label={item} onDragStart={() => handleDragStart(item)} />
+          <MenuItem key={item} label={item} onDragStart={handleDragStart} />
         ))}
         <button onClick={handleDeleteAllNodes} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
           Delete All Nodes
