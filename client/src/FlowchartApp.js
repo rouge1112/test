@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import Canvas from './Canvas';
+import DiagramCanvas from './Canvas'; 
 import { initialNodes, initialEdges } from './data';
-
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const ItemTypes = {
   NODE: 'node',
@@ -205,7 +206,7 @@ const FlowchartApp = () => {
       </div>
       <div className="flowchart-app">
       <Sidebar onDragStart={handleDragStart} />
-      <Canvas
+      <DiagramCanvas
         nodes={nodes}
         edges={edges}
         onDrop={handleDrop}
