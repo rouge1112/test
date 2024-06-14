@@ -6,8 +6,6 @@ const Line = ({ sourceNode, targetNode }) => {
   const targetX = targetNode.x + 25;
   const targetY = targetNode.y + 25;
 
-  console.log(`Line: source (${sourceX}, ${sourceY}), target (${targetX}, ${targetY})`);
-
   return (
     <line
       x1={sourceX}

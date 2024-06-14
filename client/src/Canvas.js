@@ -28,8 +28,8 @@ const Canvas = ({ nodes, edges, onDrop }) => {
         {edges.map((edge, index) => (
           <Line
             key={index}
-            sourceNode={nodes.find(node => node.id === edge.source)}
-            targetNode={nodes.find(node => node.id === edge.target)}
+            sourceNode={edge.source}
+            targetNode={edge.target}
           />
         ))}
       </svg>

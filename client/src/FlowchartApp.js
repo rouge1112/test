@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DiagramCanvas from './Canvas'; 
+import Canvas from './Canvas'; // ここを修正
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import axios from 'axios';
@@ -204,7 +204,7 @@ const FlowchartApp = () => {
         </button>
       </div>
       <div className="flowchart-app">
-      <DiagramCanvas
+      <Canvas
         nodes={nodes}
         edges={edges}
         onDrop={handleDrop}
