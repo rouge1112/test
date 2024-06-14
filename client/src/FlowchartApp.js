@@ -230,7 +230,7 @@ const FlowchartApp = () => {
 };
 
 // ノードが接続されたときにdrawConnectionを呼び出す
-drawConnection(node1, node2);
+//drawConnection(node1, node2);
 
   return (
     <DndProvider backend={HTML5Backend}>
