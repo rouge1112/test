@@ -7,6 +7,22 @@ const ItemTypes = {
   NODE: 'node',
 };
 
+// const MenuItem = ({ label }) => {
+//   const [{ isDragging }, drag] = useDrag(() => ({
+//     type: ItemTypes.NODE,
+//     item: { label },
+//     collect: (monitor) => ({
+//       isDragging: !!monitor.isDragging(),
+//     }),
+//   }))
+//   ;
+
+//   return (
+//     <div ref={drag} style={{ opacity: isDragging ? 0.5 : 1, cursor: 'move', margin: '5px' }}>
+//       {label}
+//     </div>
+//   );
+// };
 const MenuItem = ({ label, onDragStart }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.NODE,
@@ -212,25 +228,6 @@ const FlowchartApp = () => {
         });
     }
   }, [draggedItem, edges]);
-
-  const drawConnection = (startNode, endNode) => {
-    const startX = startNode.x + startNode.width / 2;
-    const startY = startNode.y + startNode.height / 2;
-    const endX = endNode.x + endNode.width / 2;
-    const endY = endNode.y + endNode.height / 2;
-
-    // 線の要素を作成
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', startX);
-    line.setAttribute('y1', startY);
-    line.setAttribute('x2', endX);
-    line.setAttribute('y2', endY);
-    line.setAttribute('stroke', 'black');
-    document.querySelector('svg').appendChild(line);
-};
-
-// ノードが接続されたときにdrawConnectionを呼び出す
-//drawConnection(node1, node2);
 
   return (
     <DndProvider backend={HTML5Backend}>
