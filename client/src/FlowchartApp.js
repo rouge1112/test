@@ -17,6 +17,7 @@ const MenuItem = ({ label, onDragStart }) => {
   }), [label]);
 
   const handleDragStart = () => {
+    console.log('MenuItem: handleDragStart:', label);
     onDragStart(label);
   };
 
@@ -32,6 +33,7 @@ const Canvas = ({ nodes, edges, onDrop, handleNodeClick, currentEdge }) => {
     accept: ItemTypes.NODE,
     drop: (item, monitor) => {
       const offset = monitor.getClientOffset();
+      console.log('Canvas: Drop position:', offset);
       onDrop(item.label, offset);
     },
   }));
@@ -118,6 +120,8 @@ const FlowchartApp = () => {
       const edgesResponse = await axios.get('http://localhost:3000/api/edges');
       setNodes(nodesResponse.data);
       setEdges(edgesResponse.data);
+      console.log('Fetched nodes:', nodesResponse.data);
+      console.log('Fetched edges:', edgesResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -127,18 +131,20 @@ const FlowchartApp = () => {
     try {
       if (currentEdge) {
         const newEdge = { source: currentEdge.source, target: nodeId };
+        console.log('Adding new edge:', newEdge);
         await axios.post('http://localhost:3000/api/edges', newEdge);
         setEdges([...edges, newEdge]);
         setCurrentEdge(null);
         fetchData();
       } else {
         setCurrentEdge({ source: nodeId, target: null });
+        console.log('Setting current edge source:', nodeId);
       }
     } catch (error) {
       console.error('Error adding edge:', error);
     }
   };
-
+  
   const handleDeleteAllNodes = async () => {
     try {
       await axios.delete('http://localhost:3000/api/nodes');
@@ -149,7 +155,7 @@ const FlowchartApp = () => {
   };
 
   const handleDragStart = (label) => {
-    console.log('handleDragStart:', label);
+    console.log('FlowchartApp: handleDragStart:', label);
     setDraggedItem(label);
   };
 
@@ -159,23 +165,30 @@ const FlowchartApp = () => {
       const x = offset.x - canvasRect.left;
       const y = offset.y - canvasRect.top;
       const newNode = { label, x, y };
-
+  
       const response = await axios.post('http://localhost:3000/api/nodes', newNode);
-      setNodes([...nodes, response.data]);
-
-      if (draggedItem) {
-        const newEdge = { source: draggedItem, target: label };
+      const addedNode = response.data;
+      setNodes([...nodes, addedNode]);
+      console.log('New node added:', addedNode);
+  
+      // 新しいノードをドロップしたときにエッジを追加
+      if (currentEdge && currentEdge.source) {
+        const newEdge = { source: currentEdge.source, target: addedNode.id };
         await axios.post('http://localhost:3000/api/edges', newEdge);
         setEdges([...edges, newEdge]);
+        console.log('New edge added:', newEdge);
+        setCurrentEdge(null);
+      } else {
+        setCurrentEdge({ source: addedNode.id, target: null });
       }
-
+  
       setDraggedItem(null);
       fetchData();
     } catch (error) {
       console.error('Error adding node:', error);
     }
   };
-
+  
   return (
     <DndProvider backend={HTML5Backend}>
       <div>
