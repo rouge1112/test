@@ -171,7 +171,6 @@ const FlowchartApp = () => {
       setNodes([...nodes, addedNode]);
       console.log('New node added:', addedNode);
   
-      // 新しいノードをドロップしたときにエッジを追加
       if (currentEdge && currentEdge.source) {
         const newEdge = { source: currentEdge.source, target: addedNode.id };
         await axios.post('http://localhost:3000/api/edges', newEdge);
@@ -189,6 +188,28 @@ const FlowchartApp = () => {
     }
   };
   
+  const calculateEdgeCoordinates = (edge) => {
+    const sourceNode = nodes.find(node => node.id === edge.source);
+    const targetNode = nodes.find(node => node.id === edge.target);
+  
+    if (!sourceNode || !targetNode) {
+      console.error('Invalid edge:', edge);
+      return { x1: 0, y1: 0, x2: 0, y2: 0 };
+    }
+  
+    console.log('Edge coordinates:', {
+      x1: sourceNode.x, y1: sourceNode.y,
+      x2: targetNode.x, y2: targetNode.y
+    });
+  
+    return {
+      x1: sourceNode.x,
+      y1: sourceNode.y,
+      x2: targetNode.x,
+      y2: targetNode.y
+    };
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div>

@@ -24,14 +24,21 @@ const Canvas = ({ nodes, edges, onDrop }) => {
           {node.label}
         </div>
       ))}
-      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-        {edges.map((edge, index) => (
-          <Line
-            key={index}
-            sourceNode={edge.source}
-            targetNode={edge.target}
-          />
-        ))}
+      <svg className="edges">
+        {edges.map((edge, index) => {
+          const { x1, y1, x2, y2 } = calculateEdgeCoordinates(edge);
+          return (
+            <line
+              key={index}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="red"
+              strokeWidth="2"
+            />
+          );
+        })}
       </svg>
     </div>
   );
