@@ -162,14 +162,16 @@ const FlowchartApp = () => {
     }
   };
   
-  const handleDeleteAllNodes = async () => {
+  const handleDeleteAll = async () => {
     try {
       await axios.delete('http://localhost:3000/api/nodes');
-      fetchData();
-    } catch (error) {
-      console.error('Error deleting all nodes:', error);
-    }
-  };
+      await axios.delete('http://localhost:3000/api/edges');
+      setNodes([]);
+      setEdges([]);
+  } catch (error) {
+      console.error('Error clearing all nodes and edges:', error);
+  }
+};
 
   const handleDragStart = (label) => {
     console.log('FlowchartApp: handleDragStart:', label);
@@ -205,27 +207,6 @@ const FlowchartApp = () => {
     }
   };
   
-  const calculateEdgeCoordinates = (edge) => {
-    const sourceNode = nodes.find(node => node.id === edge.source);
-    const targetNode = nodes.find(node => node.id === edge.target);
-  
-    if (!sourceNode || !targetNode) {
-      console.error('Invalid edge:', edge);
-      return { x1: 0, y1: 0, x2: 0, y2: 0 };
-    }
-  
-    console.log('Edge coordinates:', {
-      x1: sourceNode.x, y1: sourceNode.y,
-      x2: targetNode.x, y2: targetNode.y
-    });
-  
-    return {
-      x1: sourceNode.x,
-      y1: sourceNode.y,
-      x2: targetNode.x,
-      y2: targetNode.y
-    };
-  };
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -233,7 +214,7 @@ const FlowchartApp = () => {
         {menuItems.map((item) => (
           <MenuItem key={item} label={item} onDragStart={handleDragStart} />
         ))}
-        <button onClick={handleDeleteAllNodes} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
+        <button onClick={handleDeleteAll} style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}>
           Delete All Nodes
         </button>
       </div>
